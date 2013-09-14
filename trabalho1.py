@@ -14,6 +14,7 @@ def split_words_from_email(email, stopwords):
     words = map(lambda w: w.lower().strip(STRIPCHARS),
                 WORD_REGEX.findall(email))
 
+    # TODO stemming?
     return [w for w in words if len(w) >= 3 and w not in stopwords]
 
 # read emails and remove stop words
