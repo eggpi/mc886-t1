@@ -126,10 +126,10 @@ compute.feature.vectors <- function()
     tf <- word.count.in.email
     remove(word.count.in.email)
 
-    log.message("All done!")
+    log.message("Done computing idf and tf!")
 
     fv.not.normalized <- tf * idf
-    fv.normalized <- not.normalized / sqrt(rowSums(not.normalized ^ 2))
+    fv <- not.normalized / sqrt(rowSums(fv.not.normalized ^ 2))
 
     # export results to global env
     assign("fv", fv, envir = .GlobalEnv)
@@ -137,3 +137,13 @@ compute.feature.vectors <- function()
     assign("tf", tf, envir = .GlobalEnv)
     assign("idf", idf, envir = .GlobalEnv)
 }
+
+main <- function()
+{
+    compute.feature.vectors()
+
+    log.message("Beginning kmeans")
+    kmeans(fv, 10)
+}
+
+main()
