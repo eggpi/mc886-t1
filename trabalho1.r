@@ -55,7 +55,7 @@ compute.feature.words <- function(raw.dictionary, count.emails.with.word)
     return(feature.words)
 }
 
-compute.feature.words <- function()
+compute.feature.vectors <- function()
 {
     log.message("Starting up!")
 
@@ -127,5 +127,9 @@ compute.feature.words <- function()
     remove(word.count.in.email)
 
     log.message("All done!")
-    return(list(feature.words, tf, idf))
+
+    fv.not.normalized <- tf * idf
+    fv.normalized <- not.normalized / sqrt(rowSums(not.normalized ^ 2))
+
+    return fv
 }
