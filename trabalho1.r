@@ -25,11 +25,9 @@ make.words.from.email <- function(email.name, email.file, stopwords)
     stemmed <- LovinsStemmer(setdiff(sanitized, stopwords))
     words <- stemmed[nchar(stemmed) > 2]
 
-    if (length(email.lines) > 20)
-    {
-        assign("word.cache.size", word.cache.size + 1, envir = .GlobalEnv)
-        assign(cache.key, words, envir = .GlobalEnv)
-    }
+    # cache results
+    assign("word.cache.size", word.cache.size + 1, envir = .GlobalEnv)
+    assign(cache.key, words, envir = .GlobalEnv)
 
     return(words)
 }
