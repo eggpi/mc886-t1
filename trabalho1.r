@@ -114,8 +114,7 @@ main <- function()
 
     # compute word.count.in.email (how many times a word was used in an email)
     # and use it to calculate idf
-    word.count.in.email <- matrix(
-        rep(0, length(email.files) * length(feature.words)),
+    word.count.in.email <- Matrix(0,
         nrow = length(email.files), ncol = length(feature.words))
 
     rownames(word.count.in.email) <- Map(basename, email.files)
