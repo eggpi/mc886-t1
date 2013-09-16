@@ -79,11 +79,10 @@ main <- function()
     log.message(paste("Found", length(raw.dictionary), "unique words"))
     log.message(paste("Cached words for", word.cache.size, "emails"))
 
-    # how many emails contain a word
+    # calculate how many emails contain a word
     count.emails.with.word <- rep(0, length(raw.dictionary))
     names(count.emails.with.word) <- raw.dictionary
 
-    # compute words.in.email and use it to calculate tf
     progress <- 0
     for( ef in email.files )
     {
