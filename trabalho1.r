@@ -123,7 +123,7 @@ main <- function()
     }
 
     # calculate the term frequency for each feature word
-    tf <- word.count.in.email[,colnames(word.count.in.email) %in% feature.words]
+    tf <- word.count.in.email
     remove(word.count.in.email)
 
     log.message("All done!")
