@@ -56,18 +56,6 @@ compute.feature.words <- function(raw.dictionary, count.emails.with.word)
     return(feature.words)
 }
 
-compute.idf <- function(count.emails.with.word, feature.words, email.count)
-{
-    idf <- rep(0, length(feature.words))
-    names(idf) <- feature.words
-    for( w in feature.words )
-    {
-        idf[w] <- log(email.count / count.emails.with.word[w])
-    }
-
-    return(idf)
-}
-
 main <- function()
 {
     log.message("Starting up!")
@@ -102,11 +90,12 @@ main <- function()
 
     # decide which words will end up being features
     feature.words <- compute.feature.words(raw.dictionary, count.emails.with.word)
-    remove(raw.dictionary)
     log.message(paste("Ended up with", length(feature.words), "words"))
+    remove(raw.dictionary)
 
     # calculate the idf (inverse document frequency) for each feature word
-    idf <- compute.idf(count.emails.with.word, feature.words, length(email.files))
+    count.emails.with.word <- count.emails.with.word[feature.words]
+    idf <- log(length(email.files) / count.emails.with.word)
     remove(count.emails.with.word)
 
     # compute word.count.in.email (how many times a word was used in an email)
