@@ -110,7 +110,7 @@ compute.feature.vectors <- function()
     {
         email <- basename(ef)
         words.in.email <- make.words.from.email(email, ef, stopwords)
-        feature.words.in.email <- intersect(words.in.email, feature.words)
+        feature.words.in.email <- words.in.email[words.in.email %in% feature.words]
 
         word.count.in.email[email, feature.words.in.email] <-
             word.count.in.email[email, feature.words.in.email] + 1
