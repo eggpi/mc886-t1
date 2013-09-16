@@ -90,10 +90,8 @@ main <- function()
         words.in.email <- make.words.from.email(email, ef, stopwords)
         unique.words <- unique(words.in.email)
 
-        for( w in unique.words )
-        {
-            count.emails.with.word[w] <- count.emails.with.word[w] + 1
-        }
+        count.emails.with.word[unique.words] <-
+            count.emails.with.word[unique.words] + 1
 
         progress <- progress + 1
         if( progress %% 100 == 0 )
@@ -126,10 +124,8 @@ main <- function()
         words.in.email <- make.words.from.email(email, ef, stopwords)
         feature.words.in.email <- intersect(words.in.email, feature.words)
 
-        for( w in feature.words.in.email )
-        {
-            word.count.in.email[email, w] <- word.count.in.email[email, w] + 1
-        }
+        word.count.in.email[email, feature.words.in.email] <-
+            word.count.in.email[email, feature.words.in.email] + 1
 
         progress <- progress + 1
         if( progress %% 100  == 0 )
