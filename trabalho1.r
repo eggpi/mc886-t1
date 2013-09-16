@@ -1,3 +1,4 @@
+library("Matrix")
 library("RWeka")
 
 EMAILS_DIR = "../../dados/messages-dist"
@@ -10,7 +11,7 @@ log.message <- function(message)
 }
 
 word.cache.size <- 0
-make.words.from.email <- function(email.name, email, stopwords)
+make.words.from.email <- function(email.name, email.file, stopwords)
 {
     cache.key <- paste("cached.words.for", email.name, sep = ".")
     if( exists(cache.key) )
@@ -18,12 +19,13 @@ make.words.from.email <- function(email.name, email, stopwords)
         return(get(cache.key))
     }
 
-    tokens <- Map(tolower, WordTokenizer(email))
+    email.lines <- readLines(email.file)
+    tokens <- Map(tolower, WordTokenizer(email.lines))
     sanitized <- Map(function(t) { gsub("[\\'\"_*-<>=|%]", "", t) }, tokens)
     stemmed <- LovinsStemmer(setdiff(sanitized, stopwords))
     words <- stemmed[nchar(stemmed) > 2]
 
-    if (length(email) > 20)
+    if (length(email.lines) > 20)
     {
         assign("word.cache.size", word.cache.size + 1, envir = .GlobalEnv)
         assign(cache.key, words, envir = .GlobalEnv)
@@ -40,7 +42,7 @@ compute.full.dictionary <- function(email.files, stopwords)
     for( ef in email.files )
     {
         email <- basename(ef)
-        words.in.email <- make.words.from.email(email, readLines(ef), stopwords)
+        words.in.email <- make.words.from.email(email, ef, stopwords)
         all.words <- union(all.words, words.in.email)
     }
 
@@ -88,7 +90,7 @@ main <- function()
     for( ef in email.files )
     {
         email <- basename(ef)
-        words.in.email <- make.words.from.email(email, readLines(ef), stopwords)
+        words.in.email <- make.words.from.email(email, ef, stopwords)
         unique.words <- unique(words.in.email)
 
         for( w in unique.words )
@@ -124,7 +126,7 @@ main <- function()
     for( ef in email.files )
     {
         email <- basename(ef)
-        words.in.email <- make.words.from.email(email, readLines(ef), stopwords)
+        words.in.email <- make.words.from.email(email, ef, stopwords)
         feature.words.in.email <- intersect(words.in.email, feature.words)
 
         for( w in feature.words.in.email )
