@@ -34,15 +34,14 @@ make.words.from.email <- function(email.name, email.file, stopwords)
 
 compute.full.dictionary <- function(email.files, stopwords)
 {
-    # all unique words we're going to use as features
-    all.words <- c()
-
-    for( ef in email.files )
-    {
-        email <- basename(ef)
-        words.in.email <- make.words.from.email(email, ef, stopwords)
-        all.words <- union(all.words, words.in.email)
-    }
+    # all unique words
+    all.words <- Reduce(
+        function(all.words.so.far, ef)
+        {
+            email <- basename(ef)
+            words.in.email <- make.words.from.email(email, ef, stopwords)
+            return(union(all.words.so.far, words.in.email))
+        }, email.files)
 
     return(all.words)
 }
