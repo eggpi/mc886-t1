@@ -110,7 +110,7 @@ main <- function()
     remove(count.emails.with.word)
 
     # compute word.count.in.email (how many times a word was used in an email)
-    # and use it to calculate idf
+    # and use it to calculate the term frequency (tf)
     word.count.in.email <- Matrix(0,
         nrow = length(email.files), ncol = length(feature.words))
 
