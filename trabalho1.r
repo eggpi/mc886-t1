@@ -55,7 +55,7 @@ compute.feature.words <- function(raw.dictionary, count.emails.with.word)
     return(feature.words)
 }
 
-main <- function()
+compute.feature.words <- function()
 {
     log.message("Starting up!")
 
@@ -127,11 +127,5 @@ main <- function()
     remove(word.count.in.email)
 
     log.message("All done!")
-
-    # export our results to the workspace
-    assign("feature.words", feature.words, envir = .GlobalEnv)
-    assign("idf", idf, envir = .GlobalEnv)
-    assign("tf", tf, envir = .GlobalEnv)
+    return(list(feature.words, tf, idf))
 }
-
-main()
