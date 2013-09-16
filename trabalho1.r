@@ -21,7 +21,7 @@ make.words.from.email <- function(email.name, email.file, stopwords)
 
     email.lines <- readLines(email.file)
     tokens <- Map(tolower, WordTokenizer(email.lines))
-    sanitized <- Map(function(t) { gsub("[\\'\"_*-<>=|%]", "", t) }, tokens)
+    sanitized <- Map(function(t) { gsub("[\\'\"_*-<>=|%{}^]", "", t) }, tokens)
     stemmed <- LovinsStemmer(setdiff(sanitized, stopwords))
     words <- stemmed[nchar(stemmed) > 2]
 
@@ -131,5 +131,9 @@ compute.feature.vectors <- function()
     fv.not.normalized <- tf * idf
     fv.normalized <- not.normalized / sqrt(rowSums(not.normalized ^ 2))
 
-    return fv
+    # export results to global env
+    assign("fv", fv, envir = .GlobalEnv)
+    assign("feature.words", feature.words, envir = .GlobalEnv)
+    assign("tf", tf, envir = .GlobalEnv)
+    assign("idf", idf, envir = .GlobalEnv)
 }
