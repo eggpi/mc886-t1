@@ -109,17 +109,19 @@ compute.feature.vectors <- function()
         email <- basename(ef)
         words.in.email <- make.words.from.email(email, ef, stopwords)
 
-        count.words <- table(words.in.email)
-        count.feature.words <- as.vector(count.words[feature.words])
-        names(count.feature.words) <- feature.words
-        count.feature.words[is.na(count.feature.words)] <- 0
+        count.feature.words.table <-
+            table(words.in.email[words.in.email %in% feature.words])
+        feature.words.in.email <- rownames(count.feature.words.table)
 
-        tf[email,] <- tf[email,] + count.feature.words
+        count.feature.words <- as.vector(count.feature.words.table)
+
+        tf[email,feature.words.in.email] <-
+            tf[email,feature.words.in.email] + count.feature.words
 
         progress <- progress + 1
         if( progress %% 100  == 0 )
         {
-            log.message(paste("word.count.in.email for", progress, "emails"))
+            log.message(paste("tf for", progress, "emails"))
         }
     }
 
