@@ -129,7 +129,7 @@ compute.feature.vectors <- function()
     log.message("Done computing idf and tf!")
 
     fv.not.normalized <- tf * idf
-    fv <- not.normalized / sqrt(rowSums(fv.not.normalized ^ 2))
+    fv <- fv.not.normalized / sqrt(rowSums(fv.not.normalized ^ 2))
 
     # export results to global env
     assign("fv", fv, envir = .GlobalEnv)
