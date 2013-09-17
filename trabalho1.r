@@ -22,7 +22,7 @@ make.words.from.email <- function(email.name, email.file, stopwords)
     email.lines <- readLines(email.file)
     tokens <- Map(tolower, WordTokenizer(email.lines))
     sanitized <- Map(function(t) { gsub("[\\'\"_*-<>=|%{}^]", "", t) }, tokens)
-    stemmed <- LovinsStemmer(setdiff(sanitized, stopwords))
+    stemmed <- LovinsStemmer(sanitized[!sanitized %in% stopwords])
     words <- stemmed[nchar(stemmed) > 2]
 
     # cache results
