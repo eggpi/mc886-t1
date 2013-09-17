@@ -97,23 +97,24 @@ compute.feature.vectors <- function()
     idf <- log(length(email.files) / count.emails.with.word)
     remove(count.emails.with.word)
 
-    # compute word.count.in.email (how many times a word was used in an email)
-    # and use it to calculate the term frequency (tf)
-    word.count.in.email <- Matrix(0,
-        nrow = length(email.files), ncol = length(feature.words))
-
-    rownames(word.count.in.email) <- Map(basename, email.files)
-    colnames(word.count.in.email) <- feature.words
+    # compute tf, the term frequency (number of times each word appears
+    # in each email)
+    tf <- Matrix(0, nrow = length(email.files), ncol = length(feature.words))
+    rownames(tf) <- Map(basename, email.files)
+    colnames(tf) <- feature.words
 
     progress <- 0
     for( ef in email.files )
     {
         email <- basename(ef)
         words.in.email <- make.words.from.email(email, ef, stopwords)
-        feature.words.in.email <- words.in.email[words.in.email %in% feature.words]
 
-        word.count.in.email[email, feature.words.in.email] <-
-            word.count.in.email[email, feature.words.in.email] + 1
+        count.words <- table(words.in.email)
+        count.feature.words <- as.vector(count.words[feature.words])
+        names(count.feature.words) <- feature.words
+        count.feature.words[is.na(count.feature.words)] <- 0
+
+        tf[email,] <- tf[email,] + count.feature.words
 
         progress <- progress + 1
         if( progress %% 100  == 0 )
@@ -121,10 +122,6 @@ compute.feature.vectors <- function()
             log.message(paste("word.count.in.email for", progress, "emails"))
         }
     }
-
-    # calculate the term frequency for each feature word
-    tf <- word.count.in.email
-    remove(word.count.in.email)
 
     log.message("Done computing idf and tf!")
 
