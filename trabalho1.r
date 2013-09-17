@@ -75,10 +75,10 @@ compute.feature.vectors <- function()
     {
         email <- basename(ef)
         words.in.email <- make.words.from.email(email, ef, stopwords)
-        unique.words <- unique(words.in.email)
 
-        count.emails.with.word[unique.words] <-
-            count.emails.with.word[unique.words] + 1
+        # XXX this already eliminates duplicates for some reason
+        count.emails.with.word[words.in.email] <-
+            count.emails.with.word[words.in.email] + 1
 
         progress <- progress + 1
         if( progress %% 100 == 0 )
