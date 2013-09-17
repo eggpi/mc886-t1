@@ -41,7 +41,7 @@ compute.full.dictionary <- function(email.files, stopwords)
             email <- basename(ef)
             words.in.email <- make.words.from.email(email, ef, stopwords)
             return(union(all.words.so.far, words.in.email))
-        }, email.files)
+        }, email.files, init = c())
 
     return(all.words)
 }
