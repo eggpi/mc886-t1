@@ -135,12 +135,23 @@ compute.feature.vectors <- function()
     assign("idf", idf, envir = .GlobalEnv)
 }
 
+do.kmeans <- function(k.values)
+{
+    log.message("Beginning kmeans")
+    kmeans.results <- sapply(k.values,
+        function(k)
+        {
+            log.message(paste("kmeans for", k, "clusters"))
+            kmeans(fv, k)
+        })
+
+    # export results to global env
+    assign("kmeans.results", kmeans.results, envir = .GlobalEnv)
+}
+
 main <- function()
 {
     compute.feature.vectors()
-
-    log.message("Beginning kmeans")
-    kmeans(fv, 10)
 }
 
 main()
