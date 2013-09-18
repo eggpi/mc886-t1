@@ -1,8 +1,8 @@
 library("Matrix")
 library("RWeka")
 
-EMAILS_DIR = "../../dados/messages-dist"
-STOPWORDS = "../../dados/stopwords/english"
+EMAILS_DIR = "messages-dist"
+STOPWORDS = "stopwords/english"
 LOG = paste("logs/Log -", date())
 
 log.message <- function(message)
