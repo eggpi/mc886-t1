@@ -144,7 +144,7 @@ do.kmeans <- function(k.values)
         function(k)
         {
             log.message(paste("kmeans for", k, "clusters"))
-            kmeans(fv, k)
+            kmeans(fv, k, nstart = 20, iter.max = 100)
         })
 
     # export results to global env
