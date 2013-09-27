@@ -1,5 +1,6 @@
 library("Matrix")
 library("RWeka")
+library("parallel")
 
 EMAILS_DIR = "messages-dist"
 STOPWORDS = "stopwords/english"
@@ -140,12 +141,12 @@ compute.feature.vectors <- function()
 do.kmeans <- function(k.values)
 {
     log.message("Beginning kmeans")
-    kmeans.results <- sapply(k.values,
+    kmeans.results <- simplify2array(mclapply(k.values,
         function(k)
         {
             log.message(paste("kmeans for", k, "clusters"))
             kmeans(fv, k, nstart = 20, iter.max = 100)
-        })
+        }, mc.cores = 8))
 
     # export results to global env
     assign("kmeans.results", kmeans.results, envir = .GlobalEnv)
