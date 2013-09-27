@@ -151,6 +151,31 @@ do.kmeans <- function(k.values)
     assign("kmeans.results", kmeans.results, envir = .GlobalEnv)
 }
 
+find.centroids <- function(k, centers, clusters)
+{
+    emails <- rownames(fv)
+    min.dist <- rep(Inf, k)
+    email.centroids <- rep("", k)
+
+    sapply(emails,
+        function(email)
+        {
+            fv.for.email <- fv[email,]
+            cluster.for.email <- clusters[email]
+            center.for.cluster <- centers[cluster.for.email,]
+
+            dist <- sqrt(sum((fv.for.email - center.for.cluster) ^ 2))
+            if ( dist < min.dist[cluster.for.email] )
+            {
+                min.dist[cluster.for.email] <- dist
+                email.centers[cluster.for.email] <- email
+            }
+        })
+
+    # export results to global env
+    assign("email.centroids", email.centroids, envir = .GlobalEnv)
+}
+
 main <- function()
 {
     compute.feature.vectors()
