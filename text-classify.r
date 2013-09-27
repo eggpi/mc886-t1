@@ -153,23 +153,23 @@ do.kmeans <- function(k.values)
 
 find.centroids <- function(k, centers, clusters)
 {
-    emails <- rownames(fv)
-    min.dist <- rep(Inf, k)
-    email.centroids <- rep("", k)
-
-    sapply(emails,
-        function(email)
+    email.centroids <- sapply(1:k,
+        function(k)
         {
-            fv.for.email <- fv[email,]
-            cluster.for.email <- clusters[email]
-            center.for.cluster <- centers[cluster.for.email,]
+            log.message(paste("Finding centroid for cluster", k))
+            center.for.cluster <- centers[k,]
+            emails.in.cluster <- names(clusters[clusters == k])
 
-            dist <- sqrt(sum((fv.for.email - center.for.cluster) ^ 2))
-            if ( dist < min.dist[cluster.for.email] )
-            {
-                min.dist[cluster.for.email] <- dist
-                email.centers[cluster.for.email] <- email
-            }
+            distances <- sapply(
+                emails.in.cluster,
+                function(email)
+                {
+                    fv.for.email <- fv[email,]
+                    return(sqrt(sum((fv.for.email - center.for.cluster) ^ 2)))
+                }, USE.NAMES = TRUE)
+
+            min.dist <- min(distances)
+            return(names(distances[distances == min.dist])[1])
         })
 
     # export results to global env
