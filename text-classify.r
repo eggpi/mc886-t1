@@ -154,7 +154,7 @@ do.kmeans <- function(k.values)
 
 find.centroids <- function(k, centers, clusters)
 {
-    email.centroids <- sapply(1:k,
+    email.centroids <- simplify2array(mclapply(1:k,
         function(k)
         {
             log.message(paste("Finding centroid for cluster", k))
@@ -171,7 +171,7 @@ find.centroids <- function(k, centers, clusters)
 
             min.dist <- min(distances)
             return(names(distances[distances == min.dist])[1])
-        })
+        }, mc.cores = 8))
 
     # export results to global env
     assign("email.centroids", email.centroids, envir = .GlobalEnv)
