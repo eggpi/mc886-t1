@@ -47,9 +47,9 @@ compute.full.dictionary <- function(email.files, stopwords)
     return(all.words)
 }
 
-compute.feature.words <- function(raw.dictionary, count.emails.with.word)
+compute.feature.words <- function(raw.dictionary, count.emails.with.word, total.emails)
 {
-    too.infrequent <- count.emails.with.word[count.emails.with.word <= 2]
+    too.infrequent <- count.emails.with.word[count.emails.with.word <= 0.01 * total.emails]
     log.message(paste("Found", length(too.infrequent), "infrequent words"))
 
     feature.words <- setdiff(raw.dictionary, names(too.infrequent))
@@ -89,7 +89,7 @@ compute.feature.vectors <- function()
     }
 
     # decide which words will end up being features
-    feature.words <- compute.feature.words(raw.dictionary, count.emails.with.word)
+    feature.words <- compute.feature.words(raw.dictionary, count.emails.with.word, length(email.files))
     log.message(paste("Ended up with", length(feature.words), "words"))
     remove(raw.dictionary)
 
