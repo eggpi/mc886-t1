@@ -8,7 +8,8 @@ LOG = paste("logs/Log -", date())
 
 log.message <- function(message)
 {
-    cat(paste(message, "\n", sep = ""), file = LOG, append = TRUE)
+    print(message)
+    #cat(paste(message, "\n", sep = ""), file = LOG, append = TRUE)
 }
 
 word.cache.size <- 0
