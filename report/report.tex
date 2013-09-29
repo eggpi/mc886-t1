@@ -36,7 +36,7 @@ Este trabalho explora uma aplicação simples de técnicas de agrupamento de tex
 %%% Introduction %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introdução}
 
-Este trabalho explora técnicas de agrupamento de texto para classificar um corpo de emails por assuntos. O método, implementado em R, emprega o modelo tf-idf, que é comumente empregado para resolver problemas similares\cite{Steinbach00acomparison}, para gerar vetores descritores dos textos dos emails, e o algoritmo k-means para o agrupar esses vetores por assunto.
+Este trabalho explora técnicas de agrupamento de texto para classificar um corpo de emails por assuntos. O método, implementado em R, emprega o modelo \emph{vector space}, que é comumente empregado para resolver problemas similares\cite{Steinbach00acomparison}, para gerar vetores descritores dos textos dos emails, e o algoritmo k-means para o agrupar esses vetores por assunto.
 
 A Seção \ref{sec-problem} descreve o problema investigado por este estudo, enquanto a Seção \ref{sec-algorithm} descreve em detalhes a solução proposta. A Seção \ref{sec-experiments} contém os resultados experimentais da aplicação do algoritmo a um corpo de emails. Finalmente, a Seção \ref{sec-impl} apresenta alguns aspectos importantes de implementação não diretamente relacionados ao algoritmo.
 
@@ -62,7 +62,7 @@ ec[w] = |\{ d \in D : w \in d\}|
 
 Com isso, selecionam-se as palavras que serão de fato usadas como \emph{features} para descrever os vetores: enquanto os primeiros experimentos simplesmente selecionavam todas as palavras como features, restrições de memória e tempo de processamento levaram à escolha para features apenas das palavras que aparecem em mais de $1\%$ do total dos emails, o que reduz drasticamente o tamanho dos vetores de features resultantes e elimina diversas palavras de ruído que sobreviveram às etapas anteriores. 
 
-Computado o conjunto de feature words $fw$, calcula-se para cada uma delas o \emph{inverse document frequency}, dado por:
+Computado o conjunto de feature words, calcula-se para cada uma delas o \emph{inverse document frequency}, dado por:
 
 \begin{displaymath}
 idf[w] = \log{\frac{|E|}{ec[w]}}
@@ -189,7 +189,7 @@ Cluster & Emails mais próximos & Cluster & Emails mais próximos \\
 \label{tbl-closest}
 \end{table*}
 
-Para o cluster 1, todos os emails destacados falam sobre armas e conflitos civis. Pode-se inferir que o cluster 1 se refere à discussão sobre porte de armas por civis. Dos emails do cluster 2, o centróide e dois dos emails mais próximos envolvem astronomia, mas o terceiro, presumivelmente classificado erroneamente, fala sobre privacidade na Internet.
+Para o cluster 1, todos os emails destacados falam sobre porte de armas e conflitos civis. Pode-se inferir que o cluster 1 se refere à discussão sobre porte de armas por civis. Dos emails do cluster 2, o centróide e dois dos emails mais próximos envolvem astronomia, mas o terceiro, presumivelmente classificado erroneamente, fala sobre privacidade na Internet.
 
 Todos os emails selecionados do cluster 3 discorrem sobre hockey -- especificamente, sobre o ex-jogador e comentarista Don Cherry. Os emails do cluster 4 também todos abordam o mesmo tema, a religião cristã e discussões sobre a Bíblia.
 
@@ -197,7 +197,7 @@ Dos emails no cluster 5, 3 (incluindo o centróide) mencionam formatos de arquiv
 
 Dentre os emails no cluster 7, dois, incluindo o centróide, falam sobre placas de vídeo, e os demais falam sobre outras placas de hardware -- a palavra "card" parece ser determinante aqui. Os emails do cluster 8 discorrem sobre compra de carros.
 
-Dentre os emails do cluster 9, o centroide e dois dos mais próximos a ele versam sobre motocicletas, e o restante sobre "waterski bikes", um veículo marinho similar a uma motocicleta. No cluster 10 foram agrupados emails sem corpo, com apenas assunto ou mesmo sem assunto. O centróide, o único mais comprido, não possui assunto e apenas o texto \emph{"I AM Satan!"}.
+Dentre os emails do cluster 9, o centroide e dois dos mais próximos a ele versam sobre motocicletas, e o restante sobre "waterski bikes", um veículo marinho similar a uma motocicleta. No cluster 10 foram agrupados emails sem corpo, com apenas assunto ou mesmo sem assunto.
 
 Os emails do cluster 11 discutem conflitos étnicos e nazismo, enquanto os do cluster 12, embora abordem temas de tecnologia, não concordam em um tópico específico -- há emails sobre programação no sistema de janelas X, processos Unix, Windows 3.1 e programação em baixo nível.
 
@@ -212,8 +212,22 @@ Embora tenha-se observado alguma similaridade entre alguns pares de clusters, ob
 \section{Aspectos de implementação}
 \label{sec-impl}
 
+Além de explorar conceitos de classificação de textos, este trabalho também exercitou aspectos básicos de programação em R. Certas características da linguagem e restrições nos recursos computacionais disponíveis foram os principais fatores em algumas das decisões de implementação; essas decisões são discutidas nessa seção.
+
+Um importante desafio encontrado no início do desenvolvimento deste projeto foram limitações da memória disponível no computador utilizado. Essa limitação se mostrou particularmente presente ao construir feature vectors grandes (versões iniciais do algoritmo usavam todo o dicionário $D$ como feature words), e foi mitigada tanto através de de uma seleção mais criteriosa das features quanto, principalmente, do uso de matrizes esparsas fornecidas pelo pacote "Matrix" em R, após a observação de que os feature vectors construídos eram sempre bastante esparsos.
+
+Pelo que se observou desde o começo do desenvolvimento, a linguagem R fornece diferentes formas de se expressar uma mesma operação, e o tempo usado por cada uma delas pode variar em até uma ordem de magnitude. Por isso, parte significativa do tempo de desenvolvimento deste trabalho foi dedicado a encontrar áreas com problemas de performance usando a ferramenta de \emph{profiling} Rprof e otimizá-las.
+
+Por exemplo, em loops que preenchem valores em um vetor (como o que computa o vetor $idf$), observou-se uma significativa melhora de performance ao utilizar vetores pré-alocados de tamanho fixo em vez de criar um vetor de tamanho pequeno e fazê-lo crescer a cada iteração. Por isso, a versão final do algoritmo faz múltiplas passadas sobre os emails de entrada, de forma a calcular de antemão os tamanhos dos vetores necessários. Por exemplo, o cálculo do número de emails contendo cada palavra é feito em uma passada posterior à que quebra os emails em palavras, para que se possa saber de antemão o tamanho do conjunto $D$.
+
+Evita-se através da técnica de \emph{memoização} repetir a operação de quebra de emails em palavras, que seria necessária por todas as passadas: após a primeira vez que isso é feito, os resultados são salvos em memória e reutilizados. Felizmente, embora a memória disponível do sistema não seja suficiente para guardar os textos completos de todos os emails, ela foi capaz de guardar as palavras encontradas com facilidade.
+
+Outra otimização útil foi a utilização das funções "Map" e "sapply" em lugar de construções explícitas de loop "for". Essa manipulação ainda abre espaço para fácil paralelização do código, que foi experimentada de forma superficial no final do projeto com bons resultados.
+
+Como resultado dessas otimizações, é possível rodar o projeto completo usando o valor $k = 20$ e obter os resultados da Seção \ref{sec-experiments} em aproximadamente duas horas na máquina de testes, um MacBook Pro com 16GB de memória com processador quad-core Core i7. Outras otimizações possíveis, mas não implementadas, seriam uma implementação específica do algoritmo k-means (em vez de utilizar aquele provido pelo ambiente R), e uso mais extensivo de paralelismo.
+
 \section{Conclusão e melhorias futuras}
-Present the main conclusions of the work as well as some future directions for other people interested in continuing this work. 
+Este trabalho explorou de forma bem sucedida técnicas simples de classificação de texto e conceitos básicos de programação em R. A presença de clusters com assuntos similares (e outros sem nenhum assunto identificável) indica que uma melhoria futura poderia ser refinar a escolha de $k$, embora de forma geral os resultados tenham sido satisfatórios. Além disso, futura otimização da implementação, em particular de seu consumo de memória, pode tornar factível explorar o uso de feature vectors maiores ou mais iterações do algoritmo k-means, potencialmente produzindo resultados melhores.
 
 %%% References %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {\small
