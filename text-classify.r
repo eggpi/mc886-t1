@@ -182,7 +182,18 @@ find.centroids.and.closest.emails <- function(k, centers, clusters)
 
 main <- function()
 {
+    K = 20
     compute.feature.vectors()
+    do.kmeans(K)
+
+    centers <- kmeans.results["centers",][[1]]
+    clusters <- kmeans.results["cluster",][[1]]
+    find.centroids.and.closest.emails(K, centers, clusters)
+
+    log.message(paste(
+        "Done. The 'email.centroids' and 'closest.emails' variables in",
+        "the workspace contain the centroids for each cluster and three",
+        "closest emails to the centroid, respectively."))
 }
 
 main()
