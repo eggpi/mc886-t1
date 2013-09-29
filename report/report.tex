@@ -222,7 +222,7 @@ Por exemplo, em loops que preenchem valores em um vetor (como o que computa o ve
 
 Evita-se através da técnica de \emph{memoização} repetir a operação de quebra de emails em palavras, que seria necessária por todas as passadas: após a primeira vez que isso é feito, os resultados são salvos em memória e reutilizados. Felizmente, embora a memória disponível do sistema não seja suficiente para guardar os textos completos de todos os emails, ela foi capaz de guardar as palavras encontradas com facilidade.
 
-Outra otimização útil foi a utilização das funções "Map" e "sapply" em lugar de construções explícitas de loop "for". Essa manipulação ainda abre espaço para fácil paralelização do código, que foi experimentada de forma superficial no final do projeto com bons resultados.
+Outra otimização útil foi a utilização das funções "Map" e "sapply" em lugar de construções explícitas de loop "for". Essa manipulação ainda abre espaço para fácil paralelização do código, que foi experimentada de forma superficial no final do projeto, tornando muito mais rápida a execução dos múltiplos k-means usados no método do cotovelo.
 
 Como resultado dessas otimizações, é possível rodar o projeto completo usando o valor $k = 20$ e obter os resultados da Seção \ref{sec-experiments} em aproximadamente duas horas na máquina de testes, um MacBook Pro com 16GB de memória com processador quad-core Core i7. Outras otimizações possíveis, mas não implementadas, seriam uma implementação específica do algoritmo k-means (em vez de utilizar aquele provido pelo ambiente R), e uso mais extensivo de paralelismo.
 
